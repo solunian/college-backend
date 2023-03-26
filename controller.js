@@ -12,6 +12,7 @@ async function test () {
 	usersRef.push(user);
 }
 
+<<<<<<< Updated upstream
 function getPosts (name, tags, majors) {
 	const AMOUNT = 5;
 
@@ -43,11 +44,16 @@ async function getUsers() {
 	})
 }
 
+=======
+>>>>>>> Stashed changes
 /* USER ROUTES */
 
 //Get user by email - params (email)
 async function getUserByEmail(email) {
+<<<<<<< Updated upstream
 	console.log(email);
+=======
+>>>>>>> Stashed changes
 	return (
 		usersRef.orderByChild('email').equalTo(email).limitToLast(1).once("value")
 		.then ((snapshot) => {
@@ -115,8 +121,13 @@ module.exports = {
 	getUserByEmail: getUserByEmail, 
 	addUser: addUser,
 	addTag: addTag,
+<<<<<<< Updated upstream
 	removeTag: removeTag,
 	getPosts: getPosts,
 	putPost: putPost,
 	getUsers: getUsers
 }
+=======
+	removeTag: removeTag
+}
+>>>>>>> Stashed changes
