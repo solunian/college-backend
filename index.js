@@ -2,9 +2,16 @@ import * as express from 'express';
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import * as bodyParser from "body-parser";
+import {initializeApp} from 'firebase/app';
 
-const app = express();
-const db = admin.firestore();
+
+const firebaseConfig = {
+  //put firebase project config
+}
+
+const firebaseApp = initializeApp(firebaseConfig);
+
+
 const userCollection = 'users';
 const postCollection = 'posts';
 
