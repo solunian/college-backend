@@ -4,27 +4,32 @@ var db = firebase.database();
 var usersRef = db.ref('users');
 var postsRef = db.ref('posts');
 
-async function test () {
-	const user = {
-		when: "he",
-		at: "123041"
-	};
-	usersRef.push(user);
+async function getUser (name) {
+	return usersRef.orderByChild("name").equalTo(name).once("value") 
+		.then(snapshot => {
+			const val = snapshot.val();
+			const userID = Object.keys(val)[0];
+
+			return val[userID];
+		})
+		.catch(e => console.error)
 }
 
-function getPosts (name, tags, majors) {
-	const AMOUNT = 5;
+async function getPosts (name) {
+	const majors = (await getUser(name)).majors;
+	console.log(`majors for user '${name}': `, majors);
 
-	return postsRef.limitToLast(AMOUNT).once("value")
-		.then(snapshot => {
-			const posts = snapshot.val();
-			console.log("posts at 'getPosts'", posts);
-			return posts;
-		}).catch(e => {
-			console.log(e);
-			console.error("Error on 'getPosts'", e);
-		})
-		
+	let posts = [];
+	for (let i=0; i<majors.length; i++) {	
+		const major = majors[i];
+		const list = await postsRef.orderByChild("major").equalTo(major).once("value")
+			.then( snapshot => snapshot.val() )
+			.catch(e => [])
+		console.log(`fetched posts for major '${major}': `, list);
+		for (post in list) 
+			posts.push(list[post]);
+	};
+	return posts;
 }
 
 async function putPost (post) {
@@ -171,4 +176,4 @@ module.exports = {
 	getPosts: getPosts,
 	putPost: putPost,
 	getUsers: getUsers
-}
+}	

@@ -12,30 +12,35 @@ app.get("/test", (req, res) => {
 
 
 /* POST ROUTES */
-app.get('/posts', async (req, res) => {
-	const name = req.body.name;
-	const tags = req.body.tags;
-	const majors = req.body.majors;
-
-	console.log(`'/posts' API get request. Name: ${name}, Tags: ${tags}, Majors: ${majors}`);
-
-	const posts = await controller.getPosts(name, tags, majors);
-	console.log(posts);
+app.get('/posts/:name', async (req, res) => {
+	const name = req.params.name;
+	
+	if (typeof name !== 'string') return res.status(400).json({});
+	console.log(`'/posts' API get request. Name: ${name}`);
+	
+	const posts = await controller.getPosts(name);
+	console.log("returned posts: ", posts);
 
 	return res.status(201).json(posts);
 });
 
 app.post('/post', (req, res) => {
+	
+	if (typeof req.body.title  !== 'string') return res.status(400).json({});
+	if (typeof req.body.author !== 'string') return res.status(400).json({});
+	if (typeof req.body.text   !== 'string') return res.status(400).json({});
+	if (typeof req.body.major  !== 'string') return res.status(400).json({});
+	if (typeof req.body.attachments  !== 'string') return res.status(400).json({});
+	
 	const post = {
 		title: req.body.title,
+		author: req.body.author,
 		text: req.body.text,
-		tags: req.body.tags,
-		majors: req.body.majors,
+		major: req.body.major,
+		attachments: req.body.attachments,
+		tags: req.body.tags ? req.body.tags : [],
 	}	
 	console.log(`'/post' API post request.\nPost:`, post);
-	if (typeof post.title !== 'string') return res.status(400);
-	if (typeof post.text !== 'string') return res.status(400);
-
 	controller.putPost(post);
 });
 
