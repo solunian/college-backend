@@ -1,9 +1,7 @@
 const express = require('express');
 const controller = require('./controller.js');
-require("dotenv").config("./.env");
 
 const app = express();
-<<<<<<< Updated upstream
 app.use(express.json());
 
 /* DEV TEST */
@@ -40,25 +38,16 @@ app.post('/post', (req, res) => {
 
 	controller.putPost(post);
 });
-=======
-const port = process.env.port;
->>>>>>> Stashed changes
 
 app.get("/test", (req, res) => {
 	console.log("'/test' API called");
 	controller.test();
 });
 
-<<<<<<< Updated upstream
 app.get("/user/:email", async (req, res) => {
     console.log("'GET /user:email' called");
     const user = await controller.getUserByEmail(req.params.email);
     return res.status(200).json(user);
-=======
-app.get("/user/:email", (req, res) => {
-    console.log("'GET /user:email' called");
-    controller.getUserByEmail(req.params.email);
->>>>>>> Stashed changes
 })
 
 app.post("/user", async (req, res) => {
@@ -70,7 +59,6 @@ app.post("/user", async (req, res) => {
     res.status(200).json();
 })
 
-<<<<<<< Updated upstream
 app.get("/users", (req, res) => {
     controller.getUsers();
 })
@@ -78,8 +66,4 @@ app.get("/users", (req, res) => {
 /* Start */ 
 app.listen(2023, () => {
     console.log("listening on port: ", 2023);
-=======
-app.listen(port, () => {
-    console.log("listening on port: ", port);
->>>>>>> Stashed changes
 });
