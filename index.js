@@ -34,7 +34,19 @@ app.get('/users', async (req, res) => {
         id: user.id,
         data: user.data()
       })
-    })
+    });
 
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).send(err);
   }
+})
+
+app.get('/users/:name', (req, res) => {
+  const Name = req.params.name;
+  db.collection(userCollection).doc(id).get()
+  .then(user => {
+    if (!user.exists) throw new Error('User not found.')
+    res.status(200).json({id:user.id, data:user.data()})
+  }).catch(err => res.status(500).send(err));
 })
