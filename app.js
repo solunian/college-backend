@@ -33,6 +33,7 @@ app.post('/post', (req, res) => {
 	if (typeof req.body.text   !== 'string') return res.status(400).json({});
 	if (typeof req.body.major  !== 'string') return res.status(400).json({});
 	if (typeof req.body.attachments  !== 'string') return res.status(400).json({});
+	console.log(req.body);
 
 	const post = {
 		title: req.body.title,
@@ -40,14 +41,14 @@ app.post('/post', (req, res) => {
 		text: req.body.text,
 		major: req.body.major,
 		attachments: req.body.attachments,
-		tags: req.body.tags ? req.body.tags : [],
+		tags: req.body.tags.split(','),
 	}
 	console.log(`'/post' API post request.\nPost:`, post);
 	controller.putPost(post);
 	return res.status(201).json({"msg": "done"});
 });
 
-app.get('/post/:tag', async (req, res) => {
+app.get('/search/:tag', async (req, res) => {
 	const result = await controller.filterByTag(req.params.tag);
 	return res.status(200).json(result);
 });
@@ -76,15 +77,16 @@ app.get("/users", async (req, res) => {
 })
 
 app.post("/user/edit/:name", async (req, res) => {
-	if (typeof req.body.name !== 'string') return res.status(400).json({});
-	if (typeof req.body.bio  !== 'string') return res.status(400).json({});
+	if (typeof req.body.name   !== 'string') return res.status(400).json({});
+	if (typeof req.body.bio    !== 'string') return res.status(400).json({});
+	if (typeof req.body.majors !== 'string') return res.status(400).json({});
 
 	console.log('POST /user/edit/:name called');
 
 	const user = {
 		name: req.body.name,
-		tags: req.body.tags ? req.body.tags : [],
-		majors: req.body.majors ? req.body.majors : [],
+		tags: req.body.tags,
+		majors: req.body.majors.split(','),
 		bio: req.body.bio,
 	}
 
