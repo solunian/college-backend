@@ -5,7 +5,7 @@ var usersRef = db.ref('users');
 var postsRef = db.ref('posts');
 
 async function getUser (name) {
-	return usersRef.orderByChild("name").equalTo(name).once("value") 
+	return usersRef.orderByChild("name").equalTo(name).once("value")
 		.then(snapshot => {
 			const val = snapshot.val();
 			const userID = Object.keys(val)[0];
@@ -20,13 +20,13 @@ async function getPosts (name) {
 	console.log(`majors for user '${name}': `, majors);
 
 	let posts = [];
-	for (let i=0; i<majors.length; i++) {	
+	for (let i=0; i<majors.length; i++) {
 		const major = majors[i];
 		const list = await postsRef.orderByChild("major").equalTo(major).once("value")
 			.then( snapshot => snapshot.val() )
 			.catch(e => [])
 		console.log(`fetched posts for major '${major}': `, list);
-		for (post in list) 
+		for (post in list)
 			posts.push(list[post]);
 	};
 	return posts;
@@ -75,15 +75,15 @@ async function validateEmail(user) {
 		email: user.email
 	}
 	var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-	  
+
 	if (userInfo.email.match(validRegex)) {
 		console.log("Valid email address!");
 		return undefined;
 	} else {
-		console.log("Invalid email address!");	  
+		console.log("Invalid email address!");
 		return -1;
 	}
-	  
+
 }
 
 async function validateUser(user) {
@@ -157,8 +157,8 @@ async function removeTag(name, tag) {
 		const val = snapshot.val();
 		const id = Object.keys(val)[0];
 		if (val[id].tags == undefined) val[id].tags = [];
-		val[id].tags = val[id].tags.filter(function(ele){ 
-            return ele != tag; 
+		val[id].tags = val[id].tags.filter(function(ele){
+            return ele != tag;
         });
 
 		console.log(val[id].tags);
@@ -167,12 +167,38 @@ async function removeTag(name, tag) {
 	})
 }
 
+async function getAllPosts() {
+	return postsRef.once("value")
+	.then(snapshot => {
+		const posts = snapshot.val();
+		//console.log("users at 'getUsers'", posts);
+		return posts;
+	}).catch(e => {
+		console.log(e);
+		console.error("Error on 'getUsers'", e);
+	})
+}
+
+async function filterTag(tag) {
+	let posts = await getAllPosts();
+	let results = [];
+	Object.entries(posts).forEach(async (entry) => {
+		const [key, value] = entry;
+		if (value.tags.includes(tag)) {
+			results.push(value);
+		}
+	});
+
+	return results;
+}
+
 module.exports = {
-	getUserByName: getUserByName, 
+	getUserByName: getUserByName,
 	addUser: addUser,
 	addTag: addTag,
 	removeTag: removeTag,
 	getPosts: getPosts,
 	putPost: putPost,
-	getUsers: getUsers
-}	
+	getUsers: getUsers,
+	filterByTag: filterTag
+}

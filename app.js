@@ -16,10 +16,10 @@ app.get("/test", (req, res) => {
 /* POST ROUTES */
 app.get('/posts/:name', async (req, res) => {
 	const name = req.params.name;
-	
+
 	if (typeof name !== 'string') return res.status(400).json({});
 	console.log(`'/posts' API get request. Name: ${name}`);
-	
+
 	const posts = await controller.getPosts(name);
 	console.log("returned posts: ", posts);
 
@@ -33,7 +33,7 @@ app.post('/post', (req, res) => {
 	if (typeof req.body.text   !== 'string') return res.status(400).json({});
 	if (typeof req.body.major  !== 'string') return res.status(400).json({});
 	if (typeof req.body.attachments  !== 'string') return res.status(400).json({});
-	
+
 	const post = {
 		title: req.body.title,
 		author: req.body.author,
@@ -41,10 +41,15 @@ app.post('/post', (req, res) => {
 		major: req.body.major,
 		attachments: req.body.attachments,
 		tags: req.body.tags ? req.body.tags : [],
-	}	
+	}
 	console.log(`'/post' API post request.\nPost:`, post);
 	controller.putPost(post);
 	return res.status(201).json({"msg": "done"});
+});
+
+app.get('/post/:tag', async (req, res) => {
+	const result = await controller.filterByTag(req.params.tag);
+	return res.status(200).json(result);
 });
 
 
@@ -88,7 +93,7 @@ app.delete("/user/:name/:tag", async (req, res) => {
 });
 
 
-/* Start */ 
+/* Start */
 app.listen(2023, () => {
     console.log("listening on port: ", 2023);
 });
