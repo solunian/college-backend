@@ -47,10 +47,13 @@ app.post('/post', (req, res) => {
 	return res.status(201).json({"msg": "done"});
 });
 
-
+/* USER ROUTES */
 app.get("/user/:name", async (req, res) => {
     console.log("'GET /user:name' called");
     const user = await controller.getUserByName(req.params.name);
+
+	if (user === undefined) return res.status(400). json({err: "none"});
+
     return res.status(200).json(user);
 })
 
@@ -67,26 +70,23 @@ app.get("/users", async (req, res) => {
     controller.getUsers();
 })
 
-app.post("/user/:name/:tag", async (req, res) => {
-    console.log('POST /user/:tag/:name called');
-    const tag = req.params.tag;
-    const name = req.params.name;
-    if (tag === undefined || name === undefined) return;
+app.post("/user/edit/:name", async (req, res) => {
+	if (typeof req.body.name !== 'string') return res.status(400).json({});
+	if (typeof req.body.bio  !== 'string') return res.status(400).json({});
 
-    await controller.addTag(name, tag);
-    res.status(200).json(tag);
-})
+	console.log('POST /user/edit/:name called');
 
-app.delete("/user/:name/:tag", async (req, res) => {
-    console.log('DELETE /user/:name/:tag called');
-    const tag = req.params.tag;
-    const name = req.params.name;
-    if (tag === undefined || name === undefined) return;
+	const user = {
+		name: req.body.name,
+		tags: req.body.tags ? req.body.tags : [],
+		majors: req.body.majors ? req.body.majors : [],
+		bio: req.body.bio,
+	}
 
-    await controller.removeTag(name, tag);
-    res.status(200).json(tag);
+    await controller.updateUser(user);
+    res.status(200).json(user);
+
 });
-
 
 /* Start */ 
 app.listen(2023, () => {
