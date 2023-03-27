@@ -1,13 +1,15 @@
 const express = require('express');
 const controller = require('./controller.js');
+const cors = require('cors');
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 /* DEV TEST */
 app.get("/test", (req, res) => {
 	console.log("'/test' API called");
-	controller.test();
+	return res.status(201).json({hi: "cornell university"});
 });
 
 
@@ -25,7 +27,7 @@ app.get('/posts/:name', async (req, res) => {
 });
 
 app.post('/post', (req, res) => {
-	
+
 	if (typeof req.body.title  !== 'string') return res.status(400).json({});
 	if (typeof req.body.author !== 'string') return res.status(400).json({});
 	if (typeof req.body.text   !== 'string') return res.status(400).json({});
@@ -42,12 +44,9 @@ app.post('/post', (req, res) => {
 	}	
 	console.log(`'/post' API post request.\nPost:`, post);
 	controller.putPost(post);
+	return res.status(201).json({"msg": "done"});
 });
 
-app.get("/test", (req, res) => {
-	console.log("'/test' API called");
-	controller.test();
-});
 
 app.get("/user/:name", async (req, res) => {
     console.log("'GET /user:name' called");
@@ -86,7 +85,8 @@ app.delete("/user/:name/:tag", async (req, res) => {
 
     await controller.removeTag(name, tag);
     res.status(200).json(tag);
-    });
+});
+
 
 /* Start */ 
 app.listen(2023, () => {

@@ -168,7 +168,6 @@ async function removeTag(name, tag) {
 }
 
 module.exports = {
-	test: test,
 	getUserByName: getUserByName, 
 	addUser: addUser,
 	addTag: addTag,
