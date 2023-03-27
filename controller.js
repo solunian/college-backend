@@ -38,7 +38,6 @@ async function putPost (post) {
 
 
 /* USER ROUTES */
-
 async function getUsers() {
 	return usersRef.once("value")
 	.then(snapshot => {
@@ -128,27 +127,15 @@ async function addUser(user) {
 	}
 }
 
-async function validateAddedTag(tags, tag) {
-	return tags.includes(tag) ? -1 : undefined;
-}
 
-async function addTag(name, tag) {
-	await usersRef.orderByChild('name').equalTo(name).limitToLast(1).once("value", snapshot => {
+async function updateUser (user) {
+	await usersRef.orderByChild('name').equalTo(user.name).limitToLast(1).once("value", snapshot => {
 		const val = snapshot.val();
 		const id = Object.keys(val)[0];
-		if (val[id].tags == undefined) val[id].tags = [];
 
-		err = validateAddedTag(val[id].tags, tag);
-		if (err == undefined) {
-			val[id].tags.push(tag);
-			snapshot.ref.update(val);
-			console.log(`${tag} added to ${name}`);
-		} else {
-			console.log(
-				"repeat "
-			);
-			return err;
-		}
+		val[id] = user;
+	 	snapshot.ref.update(val);
+		console.log(`User '${user.name}, updated to: `, user);
 	});
 }
 
@@ -195,8 +182,7 @@ async function filterTag(tag) {
 module.exports = {
 	getUserByName: getUserByName,
 	addUser: addUser,
-	addTag: addTag,
-	removeTag: removeTag,
+	updateUser: updateUser,
 	getPosts: getPosts,
 	putPost: putPost,
 	getUsers: getUsers,
