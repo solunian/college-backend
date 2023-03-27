@@ -30,7 +30,7 @@ app.post('/post', (req, res) => {
 		title: req.body.title,
 		text: req.body.text,
 		tags: req.body.tags,
-		majors: req.body.majors
+		majors: req.body.majors,
 	}	
 	console.log(`'/post' API post request.\nPost:`, post);
 	if (typeof post.title !== 'string') return res.status(400);
@@ -74,7 +74,7 @@ app.post("/user/:name/:tag", async (req, res) => {
 })
 
 app.delete("/user/:name/:tag", async (req, res) => {
-    console.log('DELETE /user/:tag/:name called');
+    console.log('DELETE /user/:name/:tag called');
     const tag = req.params.tag;
     const name = req.params.name;
     if (tag === undefined || name === undefined) return;

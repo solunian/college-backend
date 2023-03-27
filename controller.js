@@ -108,7 +108,8 @@ async function addUser(user) {
 			name: user.name,
 			tags: user.tags,
 			majors: user.majors,
-			email: user.email
+			email: user.email,
+			bio: user.bio
 		};
 
 		if (!newUser.email || !newUser.name) {
