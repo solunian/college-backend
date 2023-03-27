@@ -31,11 +31,14 @@ async function putPost (post) {
 	postsRef.push(post);
 }
 
+
+/* USER ROUTES */
+
 async function getUsers() {
-	return usersRef.limitToLast(1).once("value")
+	return usersRef.once("value")
 	.then(snapshot => {
 		const posts = snapshot.val();
-		console.log("users at 'getUsers'", posts);
+		//console.log("users at 'getUsers'", posts);
 		return posts;
 	}).catch(e => {
 		console.log(e);
@@ -43,13 +46,11 @@ async function getUsers() {
 	})
 }
 
-/* USER ROUTES */
-
-//Get user by email - params (email)
-async function getUserByEmail(email) {
-	console.log(email);
+//Get user by name - params (name)
+async function getUserByName(name) {
+	//console.log(email);
 	return (
-		usersRef.orderByChild('email').equalTo(email).limitToLast(1).once("value")
+		usersRef.orderByChild('name').equalTo(name).limitToLast(1).once("value")
 		.then ((snapshot) => {
 			const val = snapshot.val();
 			const id = Object.keys(val)[0];
@@ -61,16 +62,48 @@ async function getUserByEmail(email) {
 	)
 }
 
+async function validateEmail(user) {
+	let userInfo = {
+		name: user.name,
+		tags: user.tags,
+		major: user.majors,
+		email: user.email
+	}
+	var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+	  
+	if (userInfo.email.match(validRegex)) {
+		console.log("Valid email address!");
+		return undefined;
+	} else {
+		console.log("Invalid email address!");	  
+		return -1;
+	}
+	  
+}
+
 async function validateUser(user) {
+	let users = await getUsers();
+	let condition = true;
+	console.log(typeof users);
+	Object.entries(users).forEach((entry) => {
+		const [key, value] = entry;
+		console.log(value.email + " " + user.email + "\n" + value.name + " " + user.name);
+		console.log((value.email === user.email) + " " + (value.name === user.name))
+		if (value.email === user.email || value.name === user.name) {
+			console.log("hehrse");
+			condition = false;
+		}
+	});
+
+	if (condition == false) return -1;
 	return undefined;
 }
 
-
 async function addUser(user) {
-	console.log(user);
-	let err = await validateUser(user);
-
-	if (err == undefined) {
+	let emailErr = await validateEmail(user);
+	let userErr = await validateUser(user);
+	console.log(emailErr + " " + userErr);
+	if (emailErr === undefined && userErr === undefined) {
 		let newUser = {
 			name: user.name,
 			tags: user.tags,
@@ -85,34 +118,52 @@ async function addUser(user) {
 		usersRef.push(newUser);
 	} else {
 		console.log("Invalid user.");
-		return err;
+		return emailErr;
 	}
 }
 
-async function addTag(email, tag) {
-	await usersRef.orderByChild('email').equalTo(email).limitToLast(1).once("value", snapshot => {
+async function validateAddedTag(tags, tag) {
+	return tags.includes(tag) ? -1 : undefined;
+}
+
+async function addTag(name, tag) {
+	await usersRef.orderByChild('name').equalTo(name).limitToLast(1).once("value", snapshot => {
 		const val = snapshot.val();
 		const id = Object.keys(val)[0];
 		if (val[id].tags == undefined) val[id].tags = [];
-		val[id].tags.push(tag);
-		snapshot.ref.update(val);
-		console.log(`${tag} added to ${email}`);
+
+		err = validateAddedTag(val[id].tags, tag);
+		if (err == undefined) {
+			val[id].tags.push(tag);
+			snapshot.ref.update(val);
+			console.log(`${tag} added to ${name}`);
+		} else {
+			console.log(
+				"repeat "
+			);
+			return err;
+		}
 	});
 }
 
-async function removeTag(email, tag) {
-	await usersRef.orderByChild('email').equalTo(email).limitToLast(1).once("value", snapshot => {
+async function removeTag(name, tag) {
+	await usersRef.orderByChild('name').equalTo(name).limitToLast(1).once("value", snapshot => {
 		const val = snapshot.val();
 		const id = Object.keys(val)[0];
 		if (val[id].tags == undefined) val[id].tags = [];
-		val[id].tags = _.remove(val[id].tags, function(n) { return n !== tag;});
-		console.log(`${tag} removed from ${email}`);
+		val[id].tags = val[id].tags.filter(function(ele){ 
+            return ele != tag; 
+        });
+
+		console.log(val[id].tags);
+		snapshot.ref.update(val);
+		console.log(`${tag} removed from ${name}`);
 	})
 }
 
 module.exports = {
 	test: test,
-	getUserByEmail: getUserByEmail, 
+	getUserByName: getUserByName, 
 	addUser: addUser,
 	addTag: addTag,
 	removeTag: removeTag,

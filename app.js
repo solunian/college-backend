@@ -44,24 +44,44 @@ app.get("/test", (req, res) => {
 	controller.test();
 });
 
-app.get("/user/:email", async (req, res) => {
-    console.log("'GET /user:email' called");
-    const user = await controller.getUserByEmail(req.params.email);
+app.get("/user/:name", async (req, res) => {
+    console.log("'GET /user:name' called");
+    const user = await controller.getUserByName(req.params.name);
     return res.status(200).json(user);
 })
 
 app.post("/user", async (req, res) => {
     console.log("'POST /user called");
-    const user = req.body.user;
+    const user = req.body;
     if (user == undefined) return;
 
     await controller.addUser(user);
     res.status(200).json();
 })
 
-app.get("/users", (req, res) => {
+app.get("/users", async (req, res) => {
     controller.getUsers();
 })
+
+app.post("/user/:name/:tag", async (req, res) => {
+    console.log('POST /user/:tag/:name called');
+    const tag = req.params.tag;
+    const name = req.params.name;
+    if (tag === undefined || name === undefined) return;
+
+    await controller.addTag(name, tag);
+    res.status(200).json(tag);
+})
+
+app.delete("/user/:name/:tag", async (req, res) => {
+    console.log('DELETE /user/:tag/:name called');
+    const tag = req.params.tag;
+    const name = req.params.name;
+    if (tag === undefined || name === undefined) return;
+
+    await controller.removeTag(name, tag);
+    res.status(200).json(tag);
+    });
 
 /* Start */ 
 app.listen(2023, () => {
