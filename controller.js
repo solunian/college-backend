@@ -105,9 +105,9 @@ async function validateUser(user) {
 
 async function addUser(user) {
 	let emailErr = await validateEmail(user);
-	let userErr = await validateUser(user);
-	console.log(emailErr + " " + userErr);
-	if (emailErr === undefined && userErr === undefined) {
+	//let userErr = await validateUser(user);
+	console.log(emailErr + " ");
+	if (emailErr === undefined) {
 		let newUser = {
 			name: user.name,
 			tags: user.tags,
